@@ -1,0 +1,13 @@
+#FONCTIONNEMENT INTERNE DU NAUTILUS
+
+Nautilus est fonctionne grace à deux cartes programmables : 
+- Une Raspberry Pi 4 qui gère "l'intelligence" du sous-marin, c'est elle qui analyse les entrées et envoit les commandes à la seconde carte
+- Une Arduino Mega qui gère le contrôle des moteurs
+
+Les deux cartes sont reliée par un cable USB et communiquent par liaison série grâce à la bibliothèque PiSerial.
+Voici le schéma d'architecture interne du robot : 
+
+-Teleop_twist_keyboard_vf2 : C'est le noeud qui gère la conversion des touches du clavier en commandes de type "twist" (voir documentation) et les publie sur un topic
+-Velocity_ontroller_node : Il gère la conversion des des commandes pour les moteurs en envoyant pour chaque moteur un entier entre 1100 et 1900, 1500 étant l'état d'arrêt. 
+-Serial_node : Il reçoit les commandes du noeud précédent et les envoit par liaison série à la carte Arduino
+-Carte Arduino : Analyse le message sur la voie série, extrait les vitesses pour chaque moteur et les envoit dans un tableau de 8 cases. Chaque moteur va chercher sa vitesse dans la case correspondante du tableau.
